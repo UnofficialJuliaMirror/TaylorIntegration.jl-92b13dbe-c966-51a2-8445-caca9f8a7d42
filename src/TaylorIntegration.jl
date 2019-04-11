@@ -7,6 +7,7 @@ using Reexport
 using LinearAlgebra
 using Markdown
 using Requires
+using AutoHashEquals
 
 
 export taylorinteg, lyap_taylorinteg, @taylorize, TaylorInterpolator
