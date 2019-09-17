@@ -339,6 +339,15 @@ function _newfnbody(fnbody, fnargs, d_indx)
                 push!(newfnbody.args[end].args, loopbody)
                 append!(v_newindx, tmp_newindx)
                 append!(v_arraydecl, tmp_arraydecl)
+            elseif ex_head == :macrocall && ( ex.args[1] == :(Threads.var"@threads") || ex.args[1] == Symbol("@threads") )
+                push!(newfnbody.args, Expr(:macrocall, ex.args[1]))
+                push!(newfnbody.args[end].args, ex.args[2])
+                exx = ex.args[3]
+                push!(newfnbody.args[end].args, Expr(:for, exx.args[1]))
+                loopbody, tmp_newindx, tmp_arraydecl = _newfnbody( exx.args[2], fnargs, d_indx )
+                push!(newfnbody.args[end].args[end].args, loopbody)
+                append!(v_newindx, tmp_newindx)
+                append!(v_arraydecl, tmp_arraydecl)
             elseif ex_head == :if
                 push!(newfnbody.args, Expr(:if, ex.args[1]))
                 for exx in ex.args[2:end]
